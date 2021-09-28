@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:country_picker/src/res/strings/ar.dart';
 import 'package:country_picker/src/res/strings/hr.dart';
 import 'package:flutter/material.dart';
