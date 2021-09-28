@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:country_picker/src/res/strings/ar.dart';
 import 'package:country_picker/src/res/strings/hr.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +20,9 @@ import 'res/strings/uk.dart';
 
 class CountryLocalizations {
   final Locale locale;
+  final String Function(String locale)? callBack;
 
-  CountryLocalizations(this.locale);
+  CountryLocalizations(this.locale, {this.callBack});
 
   /// The `CountryLocalizations` from the closest [Localizations] instance
   /// that encloses the given context.
@@ -45,8 +48,16 @@ class CountryLocalizations {
   static const LocalizationsDelegate<CountryLocalizations> delegate =
       _CountryLocalizationsDelegate();
 
+  static LocalizationsDelegate<CountryLocalizations> callBackDelegate(
+      {required String Function(String locale)? callBack}) {
+    return _CountryLocalizationsDelegate(callBack: callBack);
+  }
+
   /// The localized country name for the given country code.
   String? countryName({required String countryCode}) {
+    if (callBack != null) {
+      return callBack?.call(countryCode);
+    }
     switch (locale.languageCode) {
       case 'zh':
         switch (locale.scriptCode) {
@@ -90,7 +101,9 @@ class CountryLocalizations {
 
 class _CountryLocalizationsDelegate
     extends LocalizationsDelegate<CountryLocalizations> {
-  const _CountryLocalizationsDelegate();
+  final String Function(String locale)? callBack;
+
+  const _CountryLocalizationsDelegate({this.callBack});
 
   @override
   bool isSupported(Locale locale) {
@@ -110,12 +123,14 @@ class _CountryLocalizationsDelegate
       'ne',
       'tr',
       'hr',
+      'nl',
     ].contains(locale.languageCode);
   }
 
   @override
   Future<CountryLocalizations> load(Locale locale) {
-    final CountryLocalizations localizations = CountryLocalizations(locale);
+    final CountryLocalizations localizations =
+        CountryLocalizations(locale, callBack: callBack);
     return Future.value(localizations);
   }
 
